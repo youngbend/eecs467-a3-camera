@@ -22,9 +22,11 @@ start_time = time.time()
 
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     image = frame.array
+
+    # Comment this out if your camera is mounted on the top
     image = cv2.flip(image, -1)
 
-    # Correct fisheye distortion
+    # Correct fisheye distortion (should NOT be corrected for using with ORBSLAM3)
     # image = fisheye_correction.undistort(image)
 
     video.write(image)
