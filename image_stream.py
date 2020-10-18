@@ -4,7 +4,10 @@ from picamera.array import PiRGBArray
 import time
 import cv2
 import lcm
+import os
 from lcmtypes.image_t import image_t
+
+os.system("bot-lcm-tunnel &")
 
 camera_resolution = (640,480)
 camera_framerate = 16
@@ -17,6 +20,8 @@ camera.resolution = camera_resolution
 camera.framerate = camera_framerate
 rawCapture = PiRGBArray(camera, size=camera_resolution)
 
+start_time = int(time.time() * 1e9)
+
 for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=True):
     image = frame.array
 
@@ -26,7 +31,7 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
     image_packet = image_t()
-    image_packet.utime = int(time.time() * 1e9)
+    image_packet.utime = int(time.time() * 1e9) - start_time
 
     image_packet.height = image.shape[0]
     image_packet.width = image.shape[1]
