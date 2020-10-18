@@ -30,14 +30,12 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
 
     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
+    buff = cv2.imencode(".jpg", image)[1]
+
     image_packet = image_t()
     image_packet.utime = int(time.time() * 1e9) - start_time
-
-    image_packet.height = image.shape[0]
-    image_packet.width = image.shape[1]
-    image_packet.pixelformat = cv2.CV_8UC3
-    image_packet.size = image.shape[0] * image.shape[1]
-    image_packet.data = image.tobytes()
+    image_packet.size = buff.shape[0]
+    image_packet.data = buff.tobytes()
 
     lc.publish("MBOT_IMAGE_STREAM", image_packet.encode())
 

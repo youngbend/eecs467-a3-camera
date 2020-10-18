@@ -10,17 +10,14 @@ except ImportError:
 import struct
 
 class image_t(object):
-    __slots__ = ["utime", "width", "height", "pixelformat", "size", "data"]
+    __slots__ = ["utime", "size", "data"]
 
-    __typenames__ = ["int64_t", "int32_t", "int32_t", "int32_t", "int32_t", "byte"]
+    __typenames__ = ["int64_t", "int32_t", "byte"]
 
-    __dimensions__ = [None, None, None, None, None, ["size"]]
+    __dimensions__ = [None, None, ["size"]]
 
     def __init__(self):
         self.utime = 0
-        self.width = 0
-        self.height = 0
-        self.pixelformat = 0
         self.size = 0
         self.data = ""
 
@@ -31,7 +28,7 @@ class image_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">qiiii", self.utime, self.width, self.height, self.pixelformat, self.size))
+        buf.write(struct.pack(">qi", self.utime, self.size))
         buf.write(bytearray(self.data[:self.size]))
 
     def decode(data):
@@ -46,7 +43,7 @@ class image_t(object):
 
     def _decode_one(buf):
         self = image_t()
-        self.utime, self.width, self.height, self.pixelformat, self.size = struct.unpack(">qiiii", buf.read(24))
+        self.utime, self.size = struct.unpack(">qi", buf.read(12))
         self.data = buf.read(self.size)
         return self
     _decode_one = staticmethod(_decode_one)
@@ -54,7 +51,7 @@ class image_t(object):
     _hash = None
     def _get_hash_recursive(parents):
         if image_t in parents: return 0
-        tmphash = (0xf0f6fc49e18a4f98) & 0xffffffffffffffff
+        tmphash = (0x6622163ed1a7984d) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)
