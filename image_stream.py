@@ -10,7 +10,7 @@ from lcmtypes.image_t import image_t
 os.system("bot-lcm-tunnel &")
 
 camera_resolution = (640,480)
-camera_framerate = 16
+camera_framerate = 18
 
 # Change this
 lc = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
@@ -33,7 +33,7 @@ for frame in camera.capture_continuous(rawCapture, format="rgb", use_video_port=
     buff = cv2.imencode(".jpg", image)[1]
 
     image_packet = image_t()
-    image_packet.utime = int(time.time() * 1e9) - start_time
+    image_packet.utime = int(time.time() * 1e9)
     image_packet.size = buff.shape[0]
     image_packet.data = buff.tobytes()
 
